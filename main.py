@@ -1,11 +1,12 @@
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtPrintSupport import *
 
 
-class BSWord(QMainWindow):
+class PyNote(QMainWindow):
     def __init__(self):
-        super(BSWord, self).__init__()
+        super(PyNote, self).__init__()
         self.editor = QTextEdit()
         self.setCentralWidget(self.editor)
         self.showMaximized()
@@ -23,6 +24,10 @@ class BSWord(QMainWindow):
         menu_bar.addMenu(Edit_menu)
         View_menu = QMenu('View', self)
         menu_bar.addMenu(View_menu)
+
+        save_as_pdf_action = QAction('save as PDF',self)
+        save_as_pdf_action.triggered.connect(self.save_as_pdf)
+        file_menu.addAction(save_as_pdf_action)
 
         self.setMenuBar(menu_bar)
 
@@ -76,7 +81,14 @@ class BSWord(QMainWindow):
         value = self.font_size_box.value()
         self.editor.setFontPointSize(value)
 
+    def save_as_pdf(self):
+        file_path, _ = QFileDialog.getSaveFileName(self, 'Save Pdf', None, 'PDF file (*.pdf)')
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setOutputFormat(QPrinter.PdfFormat)
+        printer.setOutputFileName(file_path)
+        self.editor.document().print(printer)
+
 app = QApplication(sys.argv)
-window = BSWord()
+window = PyNote()
 window.show()
 sys.exit(app.exec_())
